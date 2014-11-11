@@ -88,6 +88,8 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
                 super.bindView(view, context, cursor);
                 if (state == VotingState.AFTER && cursor.getPosition() == 0)
                     view.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+                else
+                    view.setBackground(null);
             }
         };
         setListAdapter(adapter);
@@ -122,6 +124,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
                     menu.findItem(R.id.action_reset).setVisible(true);
                     break;
             }
+            invalidateOptionsMenu();
         }
     }
 
