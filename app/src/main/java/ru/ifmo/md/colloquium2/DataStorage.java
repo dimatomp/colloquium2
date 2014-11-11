@@ -18,7 +18,7 @@ public class DataStorage extends SQLiteOpenHelper {
     private static DataStorage instance;
 
     private DataStorage(Context context) {
-        super(context, null, null, 1);
+        super(context, "candidates.db", null, 1);
     }
 
     private static DataStorage getInstance(Context context) {
