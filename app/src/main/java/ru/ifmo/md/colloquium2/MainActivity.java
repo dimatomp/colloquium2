@@ -94,8 +94,35 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         getLoaderManager().initLoader(0, null, this).forceLoad();
         getListView().setOnItemLongClickListener(this);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_FIELD))
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_FIELD)) {
             state = (VotingState) savedInstanceState.getSerializable(STATE_FIELD);
+            updateState();
+        }
+    }
+
+    void updateState() {
+        if (menu != null) {
+            switch (state) {
+                case BEFORE:
+                    menu.findItem(R.id.action_new).setVisible(true);
+                    menu.findItem(R.id.action_start).setVisible(true);
+                    menu.findItem(R.id.action_finish).setVisible(false);
+                    menu.findItem(R.id.action_reset).setVisible(true);
+                    break;
+                case VOTING:
+                    menu.findItem(R.id.action_new).setVisible(false);
+                    menu.findItem(R.id.action_start).setVisible(false);
+                    menu.findItem(R.id.action_finish).setVisible(true);
+                    menu.findItem(R.id.action_new).setVisible(true);
+                    break;
+                case AFTER:
+                    menu.findItem(R.id.action_new).setVisible(false);
+                    menu.findItem(R.id.action_start).setVisible(true);
+                    menu.findItem(R.id.action_finish).setVisible(false);
+                    menu.findItem(R.id.action_reset).setVisible(true);
+                    break;
+            }
+        }
     }
 
     @Override
@@ -103,6 +130,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
+        updateState();
         return true;
     }
 
@@ -139,31 +167,20 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
                 break;
             case R.id.action_start:
                 DataStorage.startVoting(this);
-                menu.findItem(R.id.action_new).setVisible(false);
-                menu.findItem(R.id.action_start).setVisible(false);
-                menu.findItem(R.id.action_finish).setVisible(true);
-                menu.findItem(R.id.action_reset).setVisible(false);
                 state = VotingState.VOTING;
                 getLoaderManager().restartLoader(0, null, this).forceLoad();
                 break;
             case R.id.action_finish:
                 state = VotingState.AFTER;
-                menu.findItem(R.id.action_new).setVisible(false);
-                menu.findItem(R.id.action_start).setVisible(true);
-                menu.findItem(R.id.action_finish).setVisible(false);
-                menu.findItem(R.id.action_reset).setVisible(true);
                 getLoaderManager().restartLoader(0, null, this).forceLoad();
                 break;
             case R.id.action_reset:
                 state = VotingState.BEFORE;
-                menu.findItem(R.id.action_new).setVisible(true);
-                menu.findItem(R.id.action_start).setVisible(true);
-                menu.findItem(R.id.action_finish).setVisible(false);
-                menu.findItem(R.id.action_reset).setVisible(true);
                 DataStorage.deleteAll(this);
                 getLoaderManager().restartLoader(0, null, this).forceLoad();
                 break;
         }
+        updateState();
 
         return super.onOptionsItemSelected(item);
     }
